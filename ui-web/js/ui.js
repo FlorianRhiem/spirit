@@ -669,6 +669,33 @@ $(document).ready(function() {
   $('#button-export-ovf').on('click', function(e) {
     downloadURI(window.currentSimulation.exportOVFDataURI(), $('#input-export-spins').val()+'.ovf');
   });
+  $('#tag-der-neugier-submit').on('click', function(e) {
+    var dataURI = window.currentSimulation.exportOVFDataURI();
+    var name = $('#tag-der-neugier-name').val();
+    var externalfield = $('#input-externalfield').val();
+    if (name.length === 0) {
+      $('#tag-der-neugier-name').parent().removeClass("has-success");
+      $('#tag-der-neugier-name').parent().addClass("has-error");
+      $('#tag-der-neugier-name-help').text("Bitte geben Sie einen Namen ein.");
+    } else {
+      $('#tag-der-neugier-name').parent().removeClass("has-error");
+      $('#tag-der-neugier-name-help').text("Übertrage Ergebnisse...");
+      $.ajax({
+        type: 'POST',
+        url: 'http://localhost:8000/',
+        data: JSON.stringify({
+          "name": name,
+          "externalfield": externalfield,
+          "data": dataURI
+        }),
+        success: function(data) {
+          $('#tag-der-neugier-name').parent().addClass("has-success");
+          $('#tag-der-neugier-name-help').text("Die Daten wurden erfolgreich übertragen!");
+        },
+        contentType: "application/json",
+    });
+    }
+  });
 
   $('#button-export-energy').on('click', function(e) {
     window.currentSimulation.System_Update_Data();
